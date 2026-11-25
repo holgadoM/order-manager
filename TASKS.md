@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-T1 está en curso. T0 está aprobada. La siguiente no empieza hasta que T1 esté aprobada.
+Ninguna tarea está en marcha. T0 y T1 están aprobadas. La siguiente no empieza hasta que se pida.
 
 ## Arquitectura
 
@@ -139,7 +139,9 @@ Criterios de aceptación:
 
 ### T1 — Esquema y acceso por dueño
 
-Estado: `en curso`
+Estado: `aprobada`
+
+Último informe: [Testing T1](c122d71f-057c-4f64-8317-76566b24eb03) — `APPROVED`.
 
 Migración SQL de las cuatro tablas, con RLS y políticas de dueño.
 
