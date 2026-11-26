@@ -26,7 +26,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 import { requireSessionUser } from "../auth";
-import { listProducts } from "../product-listing";
+import { countActiveProducts, listProducts } from "../product-listing";
 
 describe("listProducts", () => {
   beforeEach(() => {
@@ -67,5 +67,74 @@ describe("listProducts", () => {
       message: "No se pudieron cargar los productos. Inténtalo de nuevo.",
     });
     expect(requireSessionUser).toHaveBeenCalled();
+  });
+});
+
+describe("countActiveProducts", () => {
+  beforeEach(() => {
+    query.select.mockReset();
+    query.eq.mockReset();
+    query.order.mockReset();
+  });
+
+  it("cuenta solo productos activos del usuario autenticado", async () => {
+    const eqCalls: [string, unknown][] = [];
+
+    query.select.mockImplementation(() => {
+      const chain = {
+        eq(column: string, value: unknown) {
+          eqCalls.push([column, value]);
+          if (eqCalls.length < 2) {
+            return chain;
+          }
+
+          return Promise.resolve({ count: 4, error: null });
+        },
+      };
+      return chain;
+    });
+
+    await expect(countActiveProducts()).resolves.toEqual({ ok: true, count: 4 });
+    expect(query.select).toHaveBeenCalledWith("id", { count: "exact", head: true });
+    expect(eqCalls).toEqual([
+      ["owner_id", "11111111-1111-4111-8111-111111111111"],
+      ["active", true],
+    ]);
+  });
+
+  it("devuelve cero cuando no hay productos activos", async () => {
+    query.select.mockImplementation(() => ({
+      eq: () => ({
+        eq: async () => ({ count: 0, error: null }),
+      }),
+    }));
+
+    await expect(countActiveProducts()).resolves.toEqual({ ok: true, count: 0 });
+  });
+
+  it("devuelve error si Supabase o la red fallan", async () => {
+    query.select.mockImplementationOnce(() => ({
+      eq: () => ({
+        eq: async () => ({ count: null, error: { message: "db down" } }),
+      }),
+    }));
+
+    await expect(countActiveProducts()).resolves.toEqual({
+      ok: false,
+      message: "No se pudieron cargar los productos. Inténtalo de nuevo.",
+    });
+
+    query.select.mockImplementationOnce(() => ({
+      eq: () => ({
+        eq: async () => {
+          throw new Error("fetch failed");
+        },
+      }),
+    }));
+
+    await expect(countActiveProducts()).resolves.toEqual({
+      ok: false,
+      message: "No se pudieron cargar los productos. Inténtalo de nuevo.",
+    });
   });
 });

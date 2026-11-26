@@ -26,6 +26,20 @@ export const ORDER_STATUSES = ["pendiente", "confirmado", "entregado", "cancelad
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
+export const SUMMARY_ORDER_STATUSES = ["pendiente", "confirmado", "entregado"] as const;
+
+export type SummaryOrderStatus = (typeof SUMMARY_ORDER_STATUSES)[number];
+
+export type OrderStatusCounts = Record<SummaryOrderStatus, number>;
+
+export function toRowCount(value: unknown): number | null {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+    return null;
+  }
+
+  return value;
+}
+
 export type OrderSummary = {
   id: string;
   customerName: string;

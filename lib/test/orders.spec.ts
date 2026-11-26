@@ -14,6 +14,7 @@ import {
   toOrderDetail,
   toOrderProducts,
   toOrderSummaries,
+  toRowCount,
   transitionOrderStatus,
 } from "../orders";
 
@@ -169,5 +170,16 @@ describe("fecha y filas de pedido", () => {
     expect(toOrderSummaries([{ ...row, status: "enviado" }])).toBeNull();
     expect(toOrderSummaries([{ ...row, order_items: [{ quantity: 0, unit_price_cents: 100 }] }])).toBeNull();
     expect(toOrderDetail({ ...row, order_items: [{ quantity: 1, unit_price_cents: 100 }] })).toBeNull();
+  });
+});
+
+describe("toRowCount", () => {
+  it("acepta cero y enteros positivos y rechaza el resto", () => {
+    expect(toRowCount(0)).toBe(0);
+    expect(toRowCount(12)).toBe(12);
+    expect(toRowCount(-1)).toBeNull();
+    expect(toRowCount(1.5)).toBeNull();
+    expect(toRowCount(null)).toBeNull();
+    expect(toRowCount("3")).toBeNull();
   });
 });

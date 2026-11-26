@@ -27,7 +27,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 import { createClient } from "../supabase/server";
-import { getOrder, listOrders } from "../order-listing";
+import { getOrder, getOrderStatusCounts, listOrders } from "../order-listing";
 
 const ownerId = "11111111-1111-4111-8111-111111111111";
 const orderId = "9e4a6d71-bf50-4c8d-ae9f-4a5b6c7d8e9f";
@@ -146,6 +146,104 @@ describe("getOrder", () => {
     await expect(getOrder(orderId)).resolves.toEqual({
       ok: false,
       kind: "error",
+      message: "No se pudieron cargar los pedidos. Inténtalo de nuevo.",
+    });
+  });
+});
+
+describe("getOrderStatusCounts", () => {
+  beforeEach(() => {
+    query.select.mockReset();
+    query.eq.mockReset();
+    query.order.mockReset();
+    query.maybeSingle.mockReset();
+    vi.mocked(createClient).mockClear();
+  });
+
+  it("cuenta pendiente, confirmado y entregado solo del usuario autenticado", async () => {
+    const statusMap: Record<string, number> = {
+      pendiente: 3,
+      confirmado: 2,
+      entregado: 5,
+    };
+
+    query.select.mockImplementation(() => {
+      let currentOwner: unknown;
+      const chain = {
+        eq(column: string, value: unknown) {
+          if (column === "owner_id") {
+            currentOwner = value;
+            return chain;
+          }
+
+          if (column === "status" && currentOwner === ownerId) {
+            return Promise.resolve({
+              count: statusMap[String(value)] ?? 0,
+              error: null,
+            });
+          }
+
+          return Promise.resolve({ count: null, error: { message: "unexpected filter" } });
+        },
+      };
+      return chain;
+    });
+
+    await expect(getOrderStatusCounts()).resolves.toEqual({
+      ok: true,
+      counts: { pendiente: 3, confirmado: 2, entregado: 5 },
+    });
+    expect(query.select).toHaveBeenCalledTimes(3);
+    expect(query.select).toHaveBeenCalledWith("id", { count: "exact", head: true });
+  });
+
+  it("devuelve ceros cuando el usuario no tiene pedidos", async () => {
+    query.select.mockImplementation(() => {
+      const chain = {
+        eq(column: string) {
+          if (column === "owner_id") {
+            return chain;
+          }
+
+          return Promise.resolve({ count: 0, error: null });
+        },
+      };
+      return chain;
+    });
+
+    await expect(getOrderStatusCounts()).resolves.toEqual({
+      ok: true,
+      counts: { pendiente: 0, confirmado: 0, entregado: 0 },
+    });
+  });
+
+  it("explica un fallo de lectura o un conteo inválido sin tumbar la página", async () => {
+    query.select.mockImplementationOnce(() => ({
+      eq: () => ({
+        eq: async () => ({ count: null, error: { message: "db down" } }),
+      }),
+    }));
+    query.select.mockImplementation(() => ({
+      eq: () => ({
+        eq: async () => ({ count: 1, error: null }),
+      }),
+    }));
+
+    await expect(getOrderStatusCounts()).resolves.toEqual({
+      ok: false,
+      message: "No se pudieron cargar los pedidos. Inténtalo de nuevo.",
+    });
+
+    query.select.mockImplementation(() => ({
+      eq: () => ({
+        eq: async () => {
+          throw new Error("fetch failed");
+        },
+      }),
+    }));
+
+    await expect(getOrderStatusCounts()).resolves.toEqual({
+      ok: false,
       message: "No se pudieron cargar los pedidos. Inténtalo de nuevo.",
     });
   });
