@@ -2,7 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
 const { createServerClient, getClaims } = vi.hoisted(() => {
-  const getClaims = vi.fn(async () => ({ data: null, error: null }));
+  const getClaims = vi.fn<
+    () => Promise<{ data: { claims: Record<string, string> } | null; error: null }>
+  >(async () => ({ data: null, error: null }));
   const createServerClient = vi.fn(() => ({
     auth: { getClaims },
   }));
@@ -36,8 +38,8 @@ function restoreEnv(): void {
   }
 }
 
-function request(): NextRequest {
-  return new NextRequest("http://localhost:3000/pedidos");
+function request(pathname = "/login"): NextRequest {
+  return new NextRequest(`http://localhost:3000${pathname}`);
 }
 
 function matcherAccepts(pathname: string): boolean {
@@ -49,7 +51,8 @@ function matcherAccepts(pathname: string): boolean {
 describe("proxy", () => {
   beforeEach(() => {
     createServerClient.mockClear();
-    getClaims.mockClear();
+    getClaims.mockReset();
+    getClaims.mockResolvedValue({ data: null, error: null });
     delete process.env[URL_KEY];
     delete process.env[PUBLISHABLE_KEY];
   });
@@ -95,6 +98,45 @@ describe("proxy", () => {
     expect(getClaims).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
     expect(response.headers.get("x-middleware-next")).toBe("1");
+  });
+
+  it("redirige al login las rutas del panel cuando no hay sesión", async () => {
+    process.env[URL_KEY] = "https://kbanmxsjernnngpfjked.supabase.co";
+    process.env[PUBLISHABLE_KEY] = "sb_publishable_test";
+
+    for (const pathname of ["/", "/products", "/customers", "/orders", "/productos", "/clientes", "/pedidos"]) {
+      const response = await proxy(request(pathname));
+
+      expect(response.status).toBe(307);
+      expect(response.headers.get("location")).toBe("http://localhost:3000/login");
+    }
+  });
+
+  it("deja pasar una ruta protegida cuando la sesión tiene claims", async () => {
+    process.env[URL_KEY] = "https://kbanmxsjernnngpfjked.supabase.co";
+    process.env[PUBLISHABLE_KEY] = "sb_publishable_test";
+    getClaims.mockResolvedValue({
+      data: { claims: { sub: "user-1", email: "ana@negocio.com" } },
+      error: null,
+    });
+
+    const response = await proxy(request("/orders"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+  });
+
+  it("reescribe los alias en español cuando hay sesión", async () => {
+    process.env[URL_KEY] = "https://kbanmxsjernnngpfjked.supabase.co";
+    process.env[PUBLISHABLE_KEY] = "sb_publishable_test";
+    getClaims.mockResolvedValue({
+      data: { claims: { sub: "user-1", email: "ana@negocio.com" } },
+      error: null,
+    });
+
+    const response = await proxy(request("/pedidos"));
+
+    expect(response.headers.get("x-middleware-rewrite")).toBe("http://localhost:3000/orders");
   });
 });
 
