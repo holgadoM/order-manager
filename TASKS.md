@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-Ninguna tarea está en marcha. T0, T1, T2, T3, T4, T5 y T6 están aprobadas. La siguiente no empieza hasta que se pida.
+Ninguna tarea está en marcha. T0, T1, T2, T3, T4, T5, T6 y T7 están aprobadas. No quedan tareas pendientes en el roadmap.
 
 ## Arquitectura
 
@@ -234,7 +234,9 @@ Criterios de aceptación:
 
 ### T7 — Resumen
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T7](f4396790-bf6e-4ab0-9514-7517de8bf527) — `APPROVED`.
 
 Página inicial del panel con conteos.
 
