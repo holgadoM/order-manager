@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-Ninguna tarea está en marcha. T0 y T1 están aprobadas. La siguiente no empieza hasta que se pida.
+Ninguna tarea está en marcha. T0, T1 y T2 están aprobadas. La siguiente no empieza hasta que se pida.
 
 ## Arquitectura
 
@@ -155,7 +155,9 @@ Criterios de aceptación:
 
 ### T2 — Acceso con correo y contraseña
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T2](764fbb7d-319b-4351-b656-f4238af4f8ec) — `APPROVED`.
 
 Alta e inicio de sesión con Supabase Auth. El panel exige sesión.
 
