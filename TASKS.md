@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-Ninguna tarea está en marcha. T0, T1 y T2 están aprobadas. La siguiente no empieza hasta que se pida.
+Ninguna tarea está en marcha. T0, T1, T2, T3 y T4 están aprobadas. La siguiente no empieza hasta que se pida.
 
 ## Arquitectura
 
@@ -171,7 +171,9 @@ Criterios de aceptación:
 
 ### T3 — Productos
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T3](bcc25269-6634-485e-b117-02a18644227e) — `APPROVED`.
 
 Alta, listado, edición y activación de productos del usuario autenticado.
 
@@ -185,7 +187,9 @@ Criterios de aceptación:
 
 ### T4 — Clientes
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T4](a09f9a4c-ee7f-442d-b850-f3cee5379a60) — `APPROVED`.
 
 Alta, listado y edición de clientes.
 
