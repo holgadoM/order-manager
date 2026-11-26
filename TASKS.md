@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-Ninguna tarea está en marcha. T0, T1, T2, T3, T4, T5, T6 y T7 están aprobadas. No quedan tareas pendientes en el roadmap.
+Ninguna tarea está en marcha. T0, T1, T2, T3, T4, T5, T6, T7 y T8 están aprobadas. No quedan tareas pendientes en el roadmap.
 
 ## Arquitectura
 
@@ -249,7 +249,9 @@ Criterios de aceptación:
 
 ### T8 — Mejora UI/UX de /orders
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T8](540c6c3f-7934-427a-a634-04d55303b99d) — `APPROVED`.
 
 Rediseño minimalista y profesional de `/orders` aplicando `ui-ux-pro-max` sobre `shadcn/ui` y `@tanstack/react-table`.
 
