@@ -245,3 +245,18 @@ Criterios de aceptación:
 - Muestra cuántos pedidos hay en pendiente, confirmado y entregado, y el número de productos activos.
 - Los conteos son solo del usuario autenticado.
 - Si no hay datos, los conteos son cero y la página sigue siendo útil.
+
+
+### T8 — Mejora UI/UX de /orders
+
+Estado: `pendiente`
+
+Rediseño minimalista y profesional de `/orders` aplicando `ui-ux-pro-max` sobre `shadcn/ui` y `@tanstack/react-table`.
+
+Criterios de aceptación:
+
+- Cabecera limpia con título, descripción breve y acción principal (`Crear un pedido`) alineados en desktop y apilados en móvil.
+- Barra de herramientas compacta con filtro de estado claro y accesible, manteniendo el conteo visible de pedidos (`aria-live="polite"`) y el estado vacío contextual.
+- Tabla `@tanstack/react-table` minimalista con jerarquía visual clara: cliente, indicador visual de estado (sin depender solo del color), total alineado numéricamente (`tabular-nums`), fecha y acción discreta para abrir la ficha.
+- Diseño responsive (375px, 768px, 1024px, 1440px), contraste WCAG AA mínimo, iconos SVG consistentes (sin emojis), `cursor-pointer` y estados hover/focus visibles.
+- `npm run lint`, `npx tsc --noEmit` y `npm test` pasan sin errores, actualizando `components/test/orders/orders-table.spec.tsx` si cambia la interacción o etiquetas.
