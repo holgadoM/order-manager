@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-import { orderTotalCents, parseOrderQuantity, type OrderCatalogProduct } from "@/lib/orders";
+import {
+  isOrderStatus,
+  orderTotalCents,
+  parseOrderQuantity,
+  type OrderCatalogProduct,
+  type OrderStatus,
+} from "@/lib/orders";
 
 const NOTES_MAX = 2000;
 
@@ -29,6 +35,39 @@ export type OrderFormState = {
 };
 
 export const initialOrderFormState: OrderFormState = {};
+
+export type OrderStatusFormState = {
+  ok?: boolean;
+  message?: string;
+};
+
+export type UpdateOrderStatusAction = (
+  state: OrderStatusFormState,
+  formData: FormData,
+) => Promise<OrderStatusFormState>;
+
+export const initialOrderStatusFormState: OrderStatusFormState = {};
+
+export const updateOrderStatusSchema = z.object({
+  orderId: z
+    .string("El pedido no es válido.")
+    .trim()
+    .refine((value) => isUuid(value), "El pedido no es válido."),
+  status: z
+    .string("Elige un estado.")
+    .trim()
+    .refine((value): value is OrderStatus => isOrderStatus(value), "Elige un estado válido."),
+});
+
+export function updateOrderStatusValues(formData: FormData): {
+  orderId: FormDataEntryValue | null;
+  status: FormDataEntryValue | null;
+} {
+  return {
+    orderId: formData.get("orderId"),
+    status: formData.get("status"),
+  };
+}
 
 function isUuid(value: string): boolean {
   return z.uuid().safeParse(value).success;
