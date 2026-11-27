@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-T0, T1, T2, T3, T4, T5, T6, T7, T8, T9 y T10 están aprobadas. Siguiente: T11.
+T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10 y T11 están aprobadas. No hay siguiente tarea definida.
 
 ## Arquitectura
 
@@ -295,7 +295,9 @@ Criterios de aceptación:
 
 ### T11 — Mejora UI/UX de /customers
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T11](4c402be1-a6c4-488d-a415-035524cd7677) — `APPROVED`.
 
 Rediseño minimalista, profesional y moderno de `/customers` (`app/(panel)/customers/page.tsx`, `components/customers/customers-table.tsx` y `components/customers/customer-form.tsx`) aplicando `.cursor/skills/ui-ux-pro-max/SKILL.md` sobre `shadcn/ui` y `@tanstack/react-table`. Mantiene la funcionalidad de T4 (alta, listado y edición con nombre obligatorio, teléfono y notas opcionales). No añade funcionalidades fuera de alcance.
 
