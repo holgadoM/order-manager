@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-En curso: T9. T0, T1, T2, T3, T4, T5, T6, T7 y T8 están aprobadas.
+T0, T1, T2, T3, T4, T5, T6, T7, T8 y T9 están aprobadas. Siguiente: T10.
 
 ## Arquitectura
 
@@ -276,3 +276,31 @@ Criterios de aceptación:
 - Estado vacío guiado (cuando los conteos son cero) y bloque de accesos rápidos (`/orders/new`, `/orders`, `/products`, `/customers`) con diseño limpio, clara distinción entre acción primaria y secundarias, y alertas de error accesibles (`role="alert"`) sin tumbar la página.
 - Diseño responsive (375px, 768px, 1024px, 1440px), espaciado consistente, contraste WCAG AA mínimo, sin emojis, `cursor-pointer` y estados hover/focus visibles en los elementos interactivos.
 - `npm run lint`, `npx tsc --noEmit` y `npm test` pasan sin errores, actualizando `components/test/summary/panel-summary.spec.tsx` si cambia la estructura o las etiquetas.
+
+### T10 — Mejora UI/UX de /products
+
+Estado: `pendiente`
+
+Rediseño minimalista, profesional y moderno de `/products` (`app/(panel)/products/page.tsx`, `components/products/products-table.tsx` y `components/products/product-form.tsx`) aplicando `.cursor/skills/ui-ux-pro-max/SKILL.md` sobre `shadcn/ui` y `@tanstack/react-table`. Mantiene la funcionalidad de T3 (alta, listado, edición, activación, euros en el formulario y céntimos en base). No añade funcionalidades fuera de alcance.
+
+Criterios de aceptación:
+
+- Cabecera limpia con título (`Productos`), descripción breve y acción principal de alta alineados en desktop y apilados en móvil, junto con un esqueleto de carga (`Suspense` fallback) coherente con la estructura del catálogo.
+- Formulario de alta integrado de forma discreta (visible o en panel/dialog accesible) con jerarquía clara, errores de validación y de red sin tumbar la página (`role="alert"` cuando corresponda).
+- Tabla `@tanstack/react-table` minimalista con jerarquía visual clara: nombre, precio alineado numéricamente (`tabular-nums`), indicador visual de activo/inactivo (sin depender solo del color) y acción discreta para editar; estado vacío contextual cuando no hay productos; conteo visible del catálogo (`aria-live="polite"`).
+- Diseño responsive (375px, 768px, 1024px, 1440px), contraste WCAG AA mínimo, iconos SVG consistentes (sin emojis), `cursor-pointer` y estados hover/focus visibles en los elementos interactivos.
+- `npm run lint`, `npx tsc --noEmit` y `npm test` pasan sin errores, actualizando `components/test/products/products-table.spec.tsx` y `components/test/products/product-form.spec.tsx` si cambia la interacción, la estructura o las etiquetas.
+
+### T11 — Mejora UI/UX de /customers
+
+Estado: `pendiente`
+
+Rediseño minimalista, profesional y moderno de `/customers` (`app/(panel)/customers/page.tsx`, `components/customers/customers-table.tsx` y `components/customers/customer-form.tsx`) aplicando `.cursor/skills/ui-ux-pro-max/SKILL.md` sobre `shadcn/ui` y `@tanstack/react-table`. Mantiene la funcionalidad de T4 (alta, listado y edición con nombre obligatorio, teléfono y notas opcionales). No añade funcionalidades fuera de alcance.
+
+Criterios de aceptación:
+
+- Cabecera limpia con título (`Clientes`), descripción breve y acción principal de alta alineados en desktop y apilados en móvil, junto con un esqueleto de carga (`Suspense` fallback) coherente con la estructura del listado.
+- Formulario de alta integrado de forma discreta (visible o en panel/dialog accesible) con jerarquía clara, errores de validación y de red sin tumbar la página (`role="alert"` cuando corresponda).
+- Tabla `@tanstack/react-table` minimalista con jerarquía visual clara: nombre, teléfono, notas truncadas con título accesible y acción discreta para editar; estado vacío contextual cuando no hay clientes; conteo visible del listado (`aria-live="polite"`).
+- Diseño responsive (375px, 768px, 1024px, 1440px), contraste WCAG AA mínimo, iconos SVG consistentes (sin emojis), `cursor-pointer` y estados hover/focus visibles en los elementos interactivos.
+- `npm run lint`, `npx tsc --noEmit` y `npm test` pasan sin errores, actualizando `components/test/customers/customers-table.spec.tsx` y `components/test/customers/customer-form.spec.tsx` si cambia la interacción, la estructura o las etiquetas.
