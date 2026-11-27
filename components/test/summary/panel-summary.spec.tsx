@@ -3,15 +3,15 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { PanelSummary } from "../../summary/panel-summary";
+import { PanelSummary, PanelSummarySkeleton } from "../../summary/panel-summary";
 
 afterEach(() => {
   cleanup();
 });
 
 describe("PanelSummary", () => {
-  it("muestra los conteos de pedidos pendientes, confirmados, entregados y productos activos", () => {
-    render(
+  it("muestra los conteos con formato tabular, contexto, iconos y accesos rápidos", () => {
+    const { container } = render(
       <PanelSummary
         ordersResult={{
           ok: true,
@@ -21,21 +21,41 @@ describe("PanelSummary", () => {
       />,
     );
 
+    const pendingValue = screen.getByLabelText("Pedidos pendientes: 4");
     expect(screen.getByRole("heading", { name: "Pedidos pendientes" })).toBeTruthy();
-    expect(screen.getByLabelText("Pedidos pendientes: 4").textContent).toBe("4");
+    expect(pendingValue.textContent).toBe("4");
+    expect(pendingValue.className).toContain("tabular-nums");
+    expect(screen.getByText("Por confirmar")).toBeTruthy();
 
+    const confirmedValue = screen.getByLabelText("Pedidos confirmados: 2");
     expect(screen.getByRole("heading", { name: "Pedidos confirmados" })).toBeTruthy();
-    expect(screen.getByLabelText("Pedidos confirmados: 2").textContent).toBe("2");
+    expect(confirmedValue.textContent).toBe("2");
+    expect(confirmedValue.className).toContain("tabular-nums");
+    expect(screen.getByText("En preparación")).toBeTruthy();
 
+    const deliveredValue = screen.getByLabelText("Pedidos entregados: 7");
     expect(screen.getByRole("heading", { name: "Pedidos entregados" })).toBeTruthy();
-    expect(screen.getByLabelText("Pedidos entregados: 7").textContent).toBe("7");
+    expect(deliveredValue.textContent).toBe("7");
+    expect(deliveredValue.className).toContain("tabular-nums");
+    expect(screen.getByText("Completados")).toBeTruthy();
 
+    const activeProductsValue = screen.getByLabelText("Productos activos: 5");
     expect(screen.getByRole("heading", { name: "Productos activos" })).toBeTruthy();
-    expect(screen.getByLabelText("Productos activos: 5").textContent).toBe("5");
+    expect(activeProductsValue.textContent).toBe("5");
+    expect(activeProductsValue.className).toContain("tabular-nums");
+    expect(screen.getByText("Disponibles para pedir")).toBeTruthy();
+
+    expect(container.querySelectorAll("section svg").length).toBeGreaterThanOrEqual(4);
 
     expect(screen.getByRole("heading", { name: "Accesos rápidos" })).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Crear un pedido" }).getAttribute("href")).toBe("/orders/new");
+    const createOrderLink = screen.getByRole("link", { name: "Crear un pedido" });
+    expect(createOrderLink.getAttribute("href")).toBe("/orders/new");
+    expect(createOrderLink.className).toContain("bg-primary");
+    expect(createOrderLink.className).toContain("cursor-pointer");
+
     expect(screen.getByRole("link", { name: "Ver pedidos" }).getAttribute("href")).toBe("/orders");
+    expect(screen.getByRole("link", { name: "Gestionar productos" }).getAttribute("href")).toBe("/products");
+    expect(screen.getByRole("link", { name: "Gestionar clientes" }).getAttribute("href")).toBe("/customers");
   });
 
   it("muestra ceros y guía útil cuando no hay datos", () => {
@@ -55,6 +75,10 @@ describe("PanelSummary", () => {
     expect(screen.getByLabelText("Productos activos: 0").textContent).toBe("0");
 
     expect(screen.getByRole("heading", { name: "Empieza a organizar tus pedidos" })).toBeTruthy();
+    expect(screen.getByText("1. Crea tus productos")).toBeTruthy();
+    expect(screen.getByText("2. Guarda tus clientes")).toBeTruthy();
+    expect(screen.getByText("3. Crea tu primer pedido")).toBeTruthy();
+
     expect(screen.getByRole("link", { name: "Añadir productos" }).getAttribute("href")).toBe("/products");
     expect(screen.getByRole("link", { name: "Añadir clientes" }).getAttribute("href")).toBe("/customers");
     expect(screen.getByRole("link", { name: "Crear un pedido" }).getAttribute("href")).toBe("/orders/new");
@@ -74,5 +98,15 @@ describe("PanelSummary", () => {
     expect(screen.getByRole("alert").textContent).toContain("No se pudieron cargar los pedidos.");
     expect(screen.getByLabelText("Pedidos pendientes: no disponible").textContent).toBe("—");
     expect(screen.getByLabelText("Productos activos: 3").textContent).toBe("3");
+  });
+});
+
+describe("PanelSummarySkeleton", () => {
+  it("renderiza el esqueleto accesible coherente con la estructura del panel", () => {
+    render(<PanelSummarySkeleton />);
+
+    const skeletonRoot = screen.getByLabelText("Cargando resumen");
+    expect(skeletonRoot.getAttribute("aria-busy")).toBe("true");
+    expect(screen.getByRole("status").textContent).toBe("Cargando resumen…");
   });
 });
