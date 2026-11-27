@@ -9,6 +9,7 @@ vi.mock("@/lib/customer-actions", () => ({
   updateCustomer: vi.fn(),
 }));
 
+import { CustomersPageShell } from "../../customers/customers-page-shell";
 import { CustomersTable } from "../../customers/customers-table";
 
 afterEach(() => {
@@ -16,14 +17,26 @@ afterEach(() => {
 });
 
 describe("CustomersTable", () => {
-  it("muestra el estado vacío dentro de la tabla", () => {
-    render(<CustomersTable customers={[]} />);
+  it("muestra el estado vacío contextual, el conteo y la acción de alta", async () => {
+    const user = userEvent.setup();
+    render(
+      <CustomersPageShell>
+        <CustomersTable customers={[]} />
+      </CustomersPageShell>,
+    );
 
+    expect(screen.getByRole("heading", { name: "Clientes" })).toBeTruthy();
     expect(screen.getByRole("table", { name: "Clientes" })).toBeTruthy();
     expect(screen.getByRole("columnheader", { name: "Nombre" })).toBeTruthy();
     expect(screen.getByRole("columnheader", { name: "Teléfono" })).toBeTruthy();
     expect(screen.getByRole("columnheader", { name: "Notas" })).toBeTruthy();
-    expect(screen.getByText("Todavía no hay clientes. Crea el primero con el formulario de arriba.")).toBeTruthy();
+    expect(screen.getByText("0 clientes").getAttribute("aria-live")).toBe("polite");
+    expect(screen.getByText("Todavía no hay clientes")).toBeTruthy();
+
+    await user.click(screen.getByRole("button", { name: "Añadir el primer cliente" }));
+
+    expect(screen.getByRole("heading", { name: "Nuevo cliente" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Cerrar alta" }).getAttribute("aria-expanded")).toBe("true");
   });
 
   it("lista teléfono y notas y abre la edición", async () => {
@@ -41,11 +54,11 @@ describe("CustomersTable", () => {
       />,
     );
 
+    expect(screen.getByText("1 cliente").getAttribute("aria-live")).toBe("polite");
     expect(screen.getByRole("cell", { name: "Ana Ruiz" })).toBeTruthy();
     expect(screen.getByRole("cell", { name: "600111222" })).toBeTruthy();
-    expect(screen.getByRole("cell", { name: "Sin notas" })).toBeTruthy();
 
-    await user.click(screen.getByRole("button", { name: "Editar" }));
+    await user.click(screen.getByRole("button", { name: "Editar Ana Ruiz" }));
 
     expect(screen.getByRole("heading", { name: "Editar cliente" })).toBeTruthy();
     expect((screen.getByLabelText("Teléfono") as HTMLInputElement).value).toBe("600111222");

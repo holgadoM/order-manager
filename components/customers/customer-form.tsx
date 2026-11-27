@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, type FormEvent } from "react";
-import { Check } from "lucide-react";
+import { AlertCircle, Check, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createCustomer, updateCustomer } from "@/lib/customer-actions";
+import { cn } from "@/lib/utils";
 import {
   createCustomerFormValues,
   createCustomerSchema,
@@ -92,59 +93,70 @@ export function CustomerForm({ mode, customer, state, pending, action }: Custome
       {hasAlert ? (
         <div
           role={isSuccess ? "status" : "alert"}
-          className={
+          className={cn(
+            "flex items-start gap-2 rounded-lg border px-3 py-2 text-sm",
             isSuccess
-              ? "flex items-start gap-2 rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-sm text-success"
-              : "rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-          }
+              ? "border-success/30 bg-success/10 text-success"
+              : "border-destructive/30 bg-destructive/10 text-destructive",
+          )}
         >
-          {isSuccess ? <Check className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> : null}
-          {message ? <p>{message}</p> : null}
-          {nameErrors.map((error) => (
-            <p key={error} id={nameErrorId}>
-              {error}
-            </p>
-          ))}
-          {phoneErrors.map((error) => (
-            <p key={error} id={phoneErrorId}>
-              {error}
-            </p>
-          ))}
-          {notesErrors.map((error) => (
-            <p key={error} id={notesErrorId}>
-              {error}
-            </p>
-          ))}
+          {isSuccess ? (
+            <Check className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          ) : (
+            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          )}
+          <div className="flex min-w-0 flex-col gap-1">
+            {message ? <p>{message}</p> : null}
+            {nameErrors.map((error) => (
+              <p key={error} id={nameErrorId}>
+                {error}
+              </p>
+            ))}
+            {phoneErrors.map((error) => (
+              <p key={error} id={phoneErrorId}>
+                {error}
+              </p>
+            ))}
+            {notesErrors.map((error) => (
+              <p key={error} id={notesErrorId}>
+                {error}
+              </p>
+            ))}
+          </div>
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-name`}>Nombre</Label>
-        <Input
-          id={`${idPrefix}-name`}
-          name="name"
-          defaultValue={customer?.name}
-          aria-invalid={nameErrors.length > 0}
-          aria-describedby={nameErrorId}
-          autoComplete="name"
-          required
-        />
-      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={`${idPrefix}-name`}>Nombre</Label>
+          <Input
+            id={`${idPrefix}-name`}
+            name="name"
+            defaultValue={customer?.name}
+            aria-invalid={nameErrors.length > 0}
+            aria-describedby={nameErrorId}
+            autoComplete="name"
+            className="h-9 cursor-text"
+            required
+          />
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-phone`}>Teléfono</Label>
-        <Input
-          id={`${idPrefix}-phone`}
-          name="phone"
-          type="tel"
-          defaultValue={customer?.phone}
-          aria-invalid={phoneErrors.length > 0}
-          aria-describedby={phoneDescribedBy}
-          autoComplete="tel"
-        />
-        <p id={phoneHintId} className="text-sm text-muted-foreground">
-          Opcional. Puedes dejarlo vacío.
-        </p>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={`${idPrefix}-phone`}>Teléfono</Label>
+          <Input
+            id={`${idPrefix}-phone`}
+            name="phone"
+            type="tel"
+            defaultValue={customer?.phone}
+            aria-invalid={phoneErrors.length > 0}
+            aria-describedby={phoneDescribedBy}
+            autoComplete="tel"
+            className="h-9 cursor-text"
+          />
+          <p id={phoneHintId} className="text-sm text-muted-foreground">
+            Opcional. Puedes dejarlo vacío.
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -156,13 +168,20 @@ export function CustomerForm({ mode, customer, state, pending, action }: Custome
           defaultValue={customer?.notes}
           aria-invalid={notesErrors.length > 0}
           aria-describedby={notesDescribedBy}
+          className="cursor-text resize-none"
         />
         <p id={notesHintId} className="text-sm text-muted-foreground">
           Opcional. Dirección, preferencias o lo que necesites recordar.
         </p>
       </div>
 
-      <Button type="submit" disabled={pending} aria-busy={pending} className="h-9 cursor-pointer self-start">
+      <Button
+        type="submit"
+        size="lg"
+        disabled={pending}
+        aria-busy={pending}
+        className="h-9 w-full cursor-pointer self-start sm:w-auto"
+      >
         {submitLabel}
       </Button>
     </form>
@@ -173,16 +192,26 @@ export function CreateCustomerForm() {
   const [state, action, pending] = useActionState(createCustomer, initialCustomerFormState);
 
   return (
-    <Card className="bg-card">
-      <CardHeader>
-        <CardTitle>
-          <h2 className="font-heading text-lg font-semibold">Nuevo cliente</h2>
-        </CardTitle>
-        <CardDescription className="text-sm text-foreground/80">
-          El nombre es obligatorio. El teléfono y las notas puedes dejarlos vacíos.
-        </CardDescription>
+    <Card className="gap-0 overflow-hidden bg-card py-0">
+      <CardHeader className="border-b border-border px-4 py-4 sm:px-5">
+        <div className="flex items-start gap-3">
+          <span
+            className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground/80"
+            aria-hidden="true"
+          >
+            <UserPlus className="size-4" />
+          </span>
+          <div className="flex min-w-0 flex-col gap-1">
+            <CardTitle>
+              <h2 className="font-heading text-base font-semibold tracking-tight text-foreground">Nuevo cliente</h2>
+            </CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              El nombre es obligatorio. El teléfono y las notas puedes dejarlos vacíos.
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 py-4 sm:px-5">
         <CustomerForm mode="create" state={state} pending={pending} action={action} />
       </CardContent>
     </Card>
@@ -193,8 +222,8 @@ export function EditCustomerForm({ customer }: { customer: EditableCustomer }) {
   const [state, action, pending] = useActionState(updateCustomer, initialCustomerFormState);
 
   return (
-    <div className="flex flex-col gap-3 py-2 whitespace-normal">
-      <h3 className="font-heading text-base font-semibold">Editar cliente</h3>
+    <div className="flex flex-col gap-3 whitespace-normal">
+      <h3 className="font-heading text-sm font-semibold text-foreground">Editar cliente</h3>
       <CustomerForm key={customer.id} mode="edit" customer={customer} state={state} pending={pending} action={action} />
     </div>
   );
