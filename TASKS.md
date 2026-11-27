@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-Ninguna tarea está en marcha. T0, T1, T2, T3, T4, T5, T6, T7 y T8 están aprobadas. La siguiente tarea pendiente es T9.
+En curso: T9. T0, T1, T2, T3, T4, T5, T6, T7 y T8 están aprobadas.
 
 ## Arquitectura
 
@@ -265,7 +265,7 @@ Criterios de aceptación:
 
 ### T9 — Mejora UI/UX de / (panel)
 
-Estado: `pendiente`
+Estado: `aprobada`
 
 Rediseño minimalista, profesional y moderno de `/` (`app/(panel)/page.tsx` y `components/summary/panel-summary.tsx`) aplicando `ui-ux-pro-max` sobre `shadcn/ui`, manteniendo la funcionalidad de T7 sin añadir funcionalidades fuera de alcance.
 
