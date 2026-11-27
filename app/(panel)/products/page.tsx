@@ -1,41 +1,34 @@
+import { AlertCircle } from "lucide-react";
 import { Suspense } from "react";
 
-import { CreateProductForm } from "@/components/products/product-form";
+import { ProductsPageShell, ProductsTableSkeleton } from "@/components/products/products-page-shell";
 import { ProductsTable } from "@/components/products/products-table";
 import { listProducts } from "@/lib/product-listing";
 
 export default function ProductsPage() {
   return (
-    <section className="flex flex-col gap-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Productos</h1>
-        <p className="max-w-2xl text-sm text-foreground/80">
-          Da de alta lo que vendes. El formulario usa euros; la base guarda céntimos.
-        </p>
-      </header>
-      <Suspense fallback={<p className="text-sm text-muted-foreground">Cargando productos…</p>}>
+    <ProductsPageShell>
+      <Suspense fallback={<ProductsTableSkeleton />}>
         <ProductsCatalog />
       </Suspense>
-    </section>
+    </ProductsPageShell>
   );
 }
 
 async function ProductsCatalog() {
   const result = await listProducts();
 
-  return (
-    <div className="flex flex-col gap-6">
-      <CreateProductForm />
-      {result.ok ? (
-        <ProductsTable products={result.products} />
-      ) : (
-        <div
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-        >
-          <p>{result.message}</p>
-        </div>
-      )}
-    </div>
-  );
+  if (!result.ok) {
+    return (
+      <div
+        role="alert"
+        className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+      >
+        <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <p>{result.message}</p>
+      </div>
+    );
+  }
+
+  return <ProductsTable products={result.products} />;
 }

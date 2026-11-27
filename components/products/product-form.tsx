@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, type FormEvent } from "react";
-import { Check } from "lucide-react";
+import { AlertCircle, Check, PackagePlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,7 @@ import {
   updateProductSchema,
   type ProductFormState,
 } from "@/lib/validation/products";
+import { cn } from "@/lib/utils";
 
 export type ProductFormMode = "create" | "edit";
 
@@ -89,62 +90,76 @@ export function ProductForm({ mode, product, state, pending, action }: ProductFo
       {hasAlert ? (
         <div
           role={isSuccess ? "status" : "alert"}
-          className={
+          className={cn(
+            "flex items-start gap-2 rounded-lg border px-3 py-2 text-sm",
             isSuccess
-              ? "flex items-start gap-2 rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-sm text-success"
-              : "rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-          }
+              ? "border-success/30 bg-success/10 text-success"
+              : "border-destructive/30 bg-destructive/10 text-destructive",
+          )}
         >
-          {isSuccess ? <Check className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> : null}
-          {message ? <p>{message}</p> : null}
-          {nameErrors.map((error) => (
-            <p key={error} id={nameErrorId}>
-              {error}
-            </p>
-          ))}
-          {priceErrors.map((error) => (
-            <p key={error} id={priceErrorId}>
-              {error}
-            </p>
-          ))}
-          {activeErrors.map((error) => (
-            <p key={error}>{error}</p>
-          ))}
+          {isSuccess ? (
+            <Check className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          ) : (
+            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          )}
+          <div className="flex min-w-0 flex-col gap-1">
+            {message ? <p>{message}</p> : null}
+            {nameErrors.map((error) => (
+              <p key={error} id={nameErrorId}>
+                {error}
+              </p>
+            ))}
+            {priceErrors.map((error) => (
+              <p key={error} id={priceErrorId}>
+                {error}
+              </p>
+            ))}
+            {activeErrors.map((error) => (
+              <p key={error}>{error}</p>
+            ))}
+          </div>
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-name`}>Nombre</Label>
-        <Input
-          id={`${idPrefix}-name`}
-          name="name"
-          defaultValue={product?.name}
-          aria-invalid={nameErrors.length > 0}
-          aria-describedby={nameErrorId}
-          autoComplete="off"
-        />
-      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={`${idPrefix}-name`}>Nombre</Label>
+          <Input
+            id={`${idPrefix}-name`}
+            name="name"
+            defaultValue={product?.name}
+            aria-invalid={nameErrors.length > 0}
+            aria-describedby={nameErrorId}
+            autoComplete="off"
+            className="h-9 cursor-text"
+          />
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-price`}>Precio (euros)</Label>
-        <Input
-          id={`${idPrefix}-price`}
-          name="priceEuros"
-          inputMode="decimal"
-          defaultValue={product?.priceEuros}
-          placeholder="12,50"
-          aria-invalid={priceErrors.length > 0}
-          aria-describedby={priceDescribedBy}
-          autoComplete="off"
-        />
-        <p id={priceHintId} className="text-sm text-muted-foreground">
-          En euros, con hasta dos decimales. Ejemplo: 12,50.
-        </p>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={`${idPrefix}-price`}>Precio (euros)</Label>
+          <Input
+            id={`${idPrefix}-price`}
+            name="priceEuros"
+            inputMode="decimal"
+            defaultValue={product?.priceEuros}
+            placeholder="12,50"
+            aria-invalid={priceErrors.length > 0}
+            aria-describedby={priceDescribedBy}
+            autoComplete="off"
+            className="h-9 cursor-text tabular-nums"
+          />
+          <p id={priceHintId} className="text-sm text-muted-foreground">
+            En euros, con hasta dos decimales. Ejemplo: 12,50.
+          </p>
+        </div>
       </div>
 
       {isEdit ? (
         <div className="flex flex-col gap-2">
-          <Label htmlFor={`${idPrefix}-active`} className="cursor-pointer">
+          <Label
+            htmlFor={`${idPrefix}-active`}
+            className="cursor-pointer rounded-lg border border-border bg-background px-3 py-2.5 transition-colors duration-200 hover:bg-muted/50 has-focus-visible:border-ring has-focus-visible:ring-3 has-focus-visible:ring-ring/50"
+          >
             <input
               id={`${idPrefix}-active`}
               name="active"
@@ -162,7 +177,13 @@ export function ProductForm({ mode, product, state, pending, action }: ProductFo
         </div>
       ) : null}
 
-      <Button type="submit" disabled={pending} aria-busy={pending} className="h-9 cursor-pointer self-start">
+      <Button
+        type="submit"
+        size="lg"
+        disabled={pending}
+        aria-busy={pending}
+        className="h-9 w-full cursor-pointer self-start sm:w-auto"
+      >
         {submitLabel}
       </Button>
     </form>
@@ -173,16 +194,26 @@ export function CreateProductForm() {
   const [state, action, pending] = useActionState(createProduct, initialProductFormState);
 
   return (
-    <Card className="bg-card">
-      <CardHeader>
-        <CardTitle>
-          <h2 className="font-heading text-lg font-semibold">Nuevo producto</h2>
-        </CardTitle>
-        <CardDescription className="text-sm text-foreground/80">
-          El precio se escribe en euros y se guarda en céntimos.
-        </CardDescription>
+    <Card className="gap-0 overflow-hidden bg-card py-0">
+      <CardHeader className="border-b border-border px-4 py-4 sm:px-5">
+        <div className="flex items-start gap-3">
+          <span
+            className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground/80"
+            aria-hidden="true"
+          >
+            <PackagePlus className="size-4" />
+          </span>
+          <div className="flex min-w-0 flex-col gap-1">
+            <CardTitle>
+              <h2 className="font-heading text-base font-semibold tracking-tight text-foreground">Nuevo producto</h2>
+            </CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              El precio se escribe en euros y se guarda en céntimos.
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 py-4 sm:px-5">
         <ProductForm mode="create" state={state} pending={pending} action={action} />
       </CardContent>
     </Card>
@@ -193,8 +224,8 @@ export function EditProductForm({ product }: { product: EditableProduct }) {
   const [state, action, pending] = useActionState(updateProduct, initialProductFormState);
 
   return (
-    <div className="flex flex-col gap-3 py-2 whitespace-normal">
-      <h3 className="font-heading text-base font-semibold">Editar producto</h3>
+    <div className="flex flex-col gap-3 whitespace-normal">
+      <h3 className="font-heading text-sm font-semibold text-foreground">Editar producto</h3>
       <ProductForm key={product.id} mode="edit" product={product} state={state} pending={pending} action={action} />
     </div>
   );
