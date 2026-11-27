@@ -6,7 +6,7 @@ El orquestador ejecuta **una tarea a la vez**. Develop implementa. Testing respo
 
 Estado de cada tarea: `pendiente` | `en curso` | `rechazada` | `aprobada`.
 
-T0, T1, T2, T3, T4, T5, T6, T7, T8 y T9 están aprobadas. Siguiente: T10.
+T0, T1, T2, T3, T4, T5, T6, T7, T8, T9 y T10 están aprobadas. Siguiente: T11.
 
 ## Arquitectura
 
@@ -279,7 +279,9 @@ Criterios de aceptación:
 
 ### T10 — Mejora UI/UX de /products
 
-Estado: `pendiente`
+Estado: `aprobada`
+
+Último informe: [Testing T10](f83f17eb-0017-42cd-9443-24743fd6e956) — `APPROVED`.
 
 Rediseño minimalista, profesional y moderno de `/products` (`app/(panel)/products/page.tsx`, `components/products/products-table.tsx` y `components/products/product-form.tsx`) aplicando `.cursor/skills/ui-ux-pro-max/SKILL.md` sobre `shadcn/ui` y `@tanstack/react-table`. Mantiene la funcionalidad de T3 (alta, listado, edición, activación, euros en el formulario y céntimos en base). No añade funcionalidades fuera de alcance.
 
